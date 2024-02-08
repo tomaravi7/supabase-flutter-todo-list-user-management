@@ -13,6 +13,8 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final User? user = supabase.auth.currentUser;
   String name = "";
+  String avatar = "";
+  String website = "";
 
   bool loading = true;
 
@@ -46,6 +48,8 @@ class _UserPageState extends State<UserPage> {
       final data =
           await supabase.from('profiles').select().eq('id', user.id).single();
       name = (data['full_name'] ?? '') as String;
+      avatar = (data['avatar_url'] ?? '') as String;
+      website = (data['website'] ?? '') as String;
     } on PostgrestException catch (err) {
       SnackBar(
         content: Text(err.message),
@@ -75,10 +79,10 @@ class _UserPageState extends State<UserPage> {
             appBar: AppBar(
                 title: Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 50,
-                      backgroundImage: NetworkImage(
-                          'https://th.bing.com/th/id/OIP.wBMp4cKdcuUYNQpa332M1QHaHl?rs=1&pid=ImgDetMain'),
+                      backgroundImage: NetworkImage('${avatar}',
+                          scale: 1.0, headers: <String, String>{}),
                     ),
                     Text('Welcome $name')
                   ],
@@ -91,8 +95,26 @@ class _UserPageState extends State<UserPage> {
                     },
                   )
                 ]),
-            body: const Center(
-              child: Text('User information'),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Welcome $name'),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Avatar: '),
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage('$avatar'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text("Website: $website")
+                ],
+              ),
             ),
           );
   }

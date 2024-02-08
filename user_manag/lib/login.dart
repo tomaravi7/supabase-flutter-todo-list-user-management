@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:user_manag/main.dart';
 import './userinfo.dart';
+import './signup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,12 +13,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late String userEmail;
-  late String userPassword;
+  late String userEmail = '';
+  late String userPassword = '';
   bool isloading = false;
   bool redirecting = false;
   late final StreamSubscription<AuthState> authStateSub;
-
+  bool obscure = true;
   Future<void> signIn() async {
     try {
       setState(() {
@@ -36,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         password: userPassword,
       );
       final User? user = res.user;
+      final Session? session = res.session;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -76,13 +78,31 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('User management')),
-        body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        appBar: AppBar(
+          title: const Text('User management',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 34,
+                  fontWeight: FontWeight.w500,
+                  decorationStyle: TextDecorationStyle.solid,
+                  decoration: TextDecoration.underline)),
+          // add a bottom border to the app bar
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Welcome to Supabase Flutter'),
-            // const SizedBox(height: 10),
+            const SizedBox(height: 10),
+            const Align(
+                alignment: Alignment.topLeft,
+                child: Text('Welcome to Supabase Flutter',
+                    style: TextStyle(
+                      fontSize: 24,
+                    ))),
+            const SizedBox(height: 10),
+            const Text(
+              'SignIn',
+              style: TextStyle(fontSize: 24),
+            ),
             TextField(
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -91,10 +111,11 @@ class _LoginPageState extends State<LoginPage> {
               onChanged: (value) => userEmail = value,
             ),
             // const SizedBox(height: 10),
-            TextField(
+            TextFormField(
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
+                hintText: 'Enter your password',
               ),
               onChanged: (value) => userPassword = value,
             ),
@@ -102,9 +123,18 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: isloading ? null : signIn,
               child: Text(isloading ? 'Loading' : 'Login'),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
+              },
+              child: const Text('Create an account'),
+            ),
           ]
               .map((e) => Padding(padding: const EdgeInsets.all(16), child: e))
               .toList(),
-        )));
+        ));
   }
 }

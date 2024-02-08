@@ -19,7 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> redirect() async {
-    await Future.delayed(const Duration(seconds: 0));
+    await Future.delayed(const Duration(seconds: 1));
     if (!mounted) {
       return;
     }
