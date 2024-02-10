@@ -88,17 +88,16 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: TextDecoration.underline)),
           // add a bottom border to the app bar
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        body: SingleChildScrollView(
+            child: Column(
           children: [
-            const SizedBox(height: 10),
             const Align(
                 alignment: Alignment.topLeft,
                 child: Text('Welcome to Supabase Flutter',
                     style: TextStyle(
                       fontSize: 24,
                     ))),
-            const SizedBox(height: 10),
+            const SizedBox(height: 7),
             const Text(
               'SignIn',
               style: TextStyle(fontSize: 24),
@@ -110,7 +109,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               onChanged: (value) => userEmail = value,
             ),
-            // const SizedBox(height: 10),
             TextFormField(
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -135,6 +133,6 @@ class _LoginPageState extends State<LoginPage> {
           ]
               .map((e) => Padding(padding: const EdgeInsets.all(16), child: e))
               .toList(),
-        ));
+        )));
   }
 }

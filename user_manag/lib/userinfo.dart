@@ -13,10 +13,12 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final User? user = supabase.auth.currentUser;
   String name = "";
+  late final String nameHead;
   String avatar = "";
   String website = "";
-
+  String mobile = "";
   bool loading = true;
+  bool clicked = false;
 
   Future<void> signOut() async {
     try {
@@ -40,20 +42,50 @@ class _UserPageState extends State<UserPage> {
 
   Future<void> getUserData() async {
     loading = true;
-    final User? user = supabase.auth.currentUser;
     try {
       if (user == null) {
         return;
       }
       final data =
-          await supabase.from('profiles').select().eq('id', user.id).single();
+          await supabase.from('profiles').select().eq('id', user!.id).single();
       name = (data['full_name'] ?? '') as String;
+      nameHead = name;
       avatar = (data['avatar_url'] ?? '') as String;
       website = (data['website'] ?? '') as String;
+      mobile = (data['mobile'] ?? '') as String;
     } on PostgrestException catch (err) {
       SnackBar(
         content: Text(err.message),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> updateUser() async {
+    setState(() {
+      loading = true;
+    });
+    final updates = {
+      'id': user!.id,
+      'full_name': name,
+      'avatar_url': avatar,
+      'website': website,
+      'mobile': mobile,
+    };
+    try {
+      await supabase.from('profiles').upsert(updates);
+      if (mounted) {
+        const SnackBar(content: Text('Profile Updated'));
+      }
+    } on PostgrestException catch (error) {
+      SnackBar(content: Text(error.message));
+    } catch (error) {
+      const SnackBar(content: Text('Unexpected Error'));
     } finally {
       if (mounted) {
         setState(() {
@@ -80,11 +112,11 @@ class _UserPageState extends State<UserPage> {
                 title: Row(
                   children: [
                     CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage('${avatar}',
+                      radius: 27,
+                      backgroundImage: NetworkImage(avatar,
                           scale: 1.0, headers: <String, String>{}),
                     ),
-                    Text('Welcome $name')
+                    Text('Welcome $nameHead')
                   ],
                 ),
                 actions: <Widget>[
@@ -95,27 +127,71 @@ class _UserPageState extends State<UserPage> {
                     },
                   )
                 ]),
-            body: Center(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Welcome $name'),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Avatar: '),
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage('$avatar'),
-                        ),
-                      ],
-                    ),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                      initialValue: name,
+                      decoration: const InputDecoration(
+                        labelText: 'Full Name',
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          name = value;
+                        });
+                      }),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    initialValue: avatar,
+                    decoration: const InputDecoration(labelText: 'Avatar URL'),
+                    onChanged: (value) {
+                      setState(() {
+                        avatar = value;
+                      });
+                    },
                   ),
-                  Text("Website: $website")
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    initialValue: website,
+                    decoration: const InputDecoration(
+                      labelText: "Website",
+                    ),
+                    onTap: () => {},
+                    onChanged: (value) {
+                      setState(() {
+                        website = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    initialValue: mobile,
+                    decoration:
+                        const InputDecoration(labelText: "Mobile Number"),
+                    onTap: () => {},
+                    onChanged: (value) {
+                      setState(() {
+                        mobile = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: loading ? null : updateUser,
+                    child: loading
+                        ? const Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 10),
+                              Text('Updating...'),
+                            ],
+                          )
+                        : const Text('Update Info'),
+                  ),
                 ],
               ),
-            ),
-          );
+            ));
   }
 }
