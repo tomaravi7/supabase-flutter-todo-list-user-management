@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import './splash.dart';
+import './color_scheme.dart';
 
 void main() async {
   await Supabase.initialize(
@@ -19,10 +21,28 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // darkTheme: ThemeData.dark(),
-      home: MyHomePage(),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: darkColorScheme,
+        textTheme: TextTheme(
+          displayLarge: const TextStyle(
+            fontSize: 72,
+            fontWeight: FontWeight.bold,
+          ),
+          titleLarge: GoogleFonts.oswald(
+            fontSize: 30,
+            fontStyle: FontStyle.italic,
+          ),
+          bodyMedium: GoogleFonts.merriweather(),
+          displaySmall: GoogleFonts.pacifico(),
+        ),
+        // pageTransitionsTheme: PageTransitionsTheme(builders: {
+        //   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        // })
+      ),
+      home: const MyHomePage(),
     );
   }
 }

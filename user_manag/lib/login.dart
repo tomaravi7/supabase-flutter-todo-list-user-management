@@ -81,7 +81,6 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(
           title: const Text('User management',
               style: TextStyle(
-                  color: Colors.black,
                   fontSize: 34,
                   fontWeight: FontWeight.w500,
                   decorationStyle: TextDecorationStyle.solid,
