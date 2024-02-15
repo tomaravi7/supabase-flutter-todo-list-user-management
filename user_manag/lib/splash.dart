@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:user_manag/userinfo.dart';
 import './login.dart';
 import './main.dart';
+import './todolist.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
           context, MaterialPageRoute(builder: (context) => const LoginPage()));
     } else {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const UserPage()));
+          context, MaterialPageRoute(builder: (context) => const TodoPage()));
     }
   }
 
@@ -46,9 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 //   height: 125.0,
                 //   width: 125.0,
                 // ),
-                CircularProgressIndicator(),
                 Text(
                   'Welcome to Supabase Flutter',
+                ),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  strokeWidth: 5,
                 ),
               ]),
         ));

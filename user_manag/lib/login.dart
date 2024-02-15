@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:user_manag/main.dart';
-import './userinfo.dart';
+import './todolist.dart';
 import './signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       if (session != null) {
         redirecting = true;
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const UserPage()));
+            context, MaterialPageRoute(builder: (context) => const TodoPage()));
       }
     });
     super.initState();
@@ -122,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SignUpPage()));

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:user_manag/login.dart';
+import 'package:user_manag/todolist.dart';
 import './main.dart';
 
 class UserPage extends StatefulWidget {
@@ -20,23 +21,59 @@ class _UserPageState extends State<UserPage> {
   bool loading = true;
   bool clicked = false;
 
+  Future<void> signOutConfirm() async {
+    setState(() {
+      showAdaptiveDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('SignOut Confirmation'),
+              content: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Text('Are you sure you want to sign out?'),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        signOut();
+                      },
+                      child: const Text('Sign Out'),
+                    ),
+                  ],
+                ),
+              ]),
+            );
+          });
+    });
+  }
+
   Future<void> signOut() async {
     try {
+      Navigator.of(context).popUntil((route) => route.isFirst);
       await supabase.auth.signOut();
     } on AuthException catch (error) {
-      SnackBar(
-        content: Text(error.message),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message),
+          backgroundColor: Colors.red,
+        ),
       );
     } catch (error) {
-      const SnackBar(
-        content: Text('Unexpected Error'),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unexpected Error'),
+        ),
       );
     } finally {
-      if (mounted) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LoginPage()));
-      }
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const LoginPage()));
     }
   }
 
@@ -53,7 +90,6 @@ class _UserPageState extends State<UserPage> {
       avatar = (data['avatar_url'] ?? '') as String;
       website = (data['website'] ?? '') as String;
       mobile = (data['mobile'] ?? 0) as int;
-      print("\n\mobile $mobile\n\n");
     } on PostgrestException catch (err) {
       SnackBar(
         content: Text(err.message),
@@ -78,7 +114,6 @@ class _UserPageState extends State<UserPage> {
       'website': website,
       'mobile': mobile,
     };
-    print(mobile);
     try {
       await supabase.from('profiles').upsert(updates);
       if (mounted) {
@@ -112,6 +147,8 @@ class _UserPageState extends State<UserPage> {
           )
         : Scaffold(
             appBar: AppBar(
+                backgroundColor: Colors.black,
+                bottomOpacity: 20,
                 title: Row(
                   children: [
                     CircleAvatar(
@@ -123,18 +160,35 @@ class _UserPageState extends State<UserPage> {
                   ],
                 ),
                 actions: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.logout),
-                    onPressed: () {
-                      signOut();
-                    },
-                  )
+                  Tooltip(
+                    richMessage: const TextSpan(
+                      text: 'Todo List',
+                    ),
+                    child: IconButton(
+                        onPressed: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const TodoPage())),
+                        icon: const Icon(Icons.list)),
+                  ),
+                  Tooltip(
+                    richMessage: const TextSpan(
+                      text: 'Sign Out',
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        signOutConfirm();
+                      },
+                      icon: const Icon(Icons.logout),
+                    ),
+                  ),
                 ]),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text('Email ID: ${user!.email}'),
                   TextFormField(
                       initialValue: name,
                       decoration: const InputDecoration(
@@ -169,12 +223,12 @@ class _UserPageState extends State<UserPage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    initialValue: (mobile ?? "").toString(),
+                    initialValue: (mobile).toString(),
                     decoration:
                         const InputDecoration(labelText: "Mobile Number"),
                     onChanged: (value) {
                       setState(() {
-                        mobile = value as int;
+                        mobile = int.tryParse(value) ?? 0;
                       });
                     },
                   ),
