@@ -19,7 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> redirect() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) {
       return;
     }
@@ -41,11 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image(
-                  image: AssetImage('asset/splash.gif'),
-                  height: 125.0,
-                  width: 125.0,
-                ),
+                // Image(
+                //   image: AssetImage('asset/splash.gif'),
+                //   height: 125.0,
+                //   width: 125.0,
+                // ),
+                CircularProgressIndicator(),
                 Text(
                   'Welcome to Supabase Flutter',
                 ),

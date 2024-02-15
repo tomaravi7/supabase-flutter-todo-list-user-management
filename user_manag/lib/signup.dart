@@ -5,7 +5,7 @@ import 'package:user_manag/login.dart';
 import 'package:user_manag/main.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -34,7 +34,6 @@ class _SignUpPageState extends State<SignUpPage> {
           .signUp(email: userEmail, password: userPassword, data: {
         'full_name': userFullName,
         'avatar_url': userAvatar,
-        
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -44,12 +43,13 @@ class _SignUpPageState extends State<SignUpPage> {
               MaterialPageRoute(builder: (context) => const LoginPage()));
         }
       }
-    } on AuthException catch (err) {
+    } on Exception catch (err) {
       setState(() {
         hasError = true;
         isloading = false;
       });
-      SnackBar(content: Text(err.message));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(err.toString())));
     } finally {
       setState(() {
         isloading = false;

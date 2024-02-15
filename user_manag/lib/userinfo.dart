@@ -13,10 +13,10 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final User? user = supabase.auth.currentUser;
   String name = "";
-  late final String nameHead;
+  late String nameHead;
   String avatar = "";
   String website = "";
-  String mobile = "";
+  late int mobile;
   bool loading = true;
   bool clicked = false;
 
@@ -52,7 +52,8 @@ class _UserPageState extends State<UserPage> {
       nameHead = name;
       avatar = (data['avatar_url'] ?? '') as String;
       website = (data['website'] ?? '') as String;
-      mobile = (data['mobile'] ?? '') as String;
+      mobile = (data['mobile'] ?? 0) as int;
+      print("\n\mobile $mobile\n\n");
     } on PostgrestException catch (err) {
       SnackBar(
         content: Text(err.message),
@@ -77,10 +78,12 @@ class _UserPageState extends State<UserPage> {
       'website': website,
       'mobile': mobile,
     };
+    print(mobile);
     try {
       await supabase.from('profiles').upsert(updates);
       if (mounted) {
-        const SnackBar(content: Text('Profile Updated'));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Profile Updated')));
       }
     } on PostgrestException catch (error) {
       SnackBar(content: Text(error.message));
@@ -158,7 +161,6 @@ class _UserPageState extends State<UserPage> {
                     decoration: const InputDecoration(
                       labelText: "Website",
                     ),
-                    onTap: () => {},
                     onChanged: (value) {
                       setState(() {
                         website = value;
@@ -167,13 +169,12 @@ class _UserPageState extends State<UserPage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    initialValue: mobile,
+                    initialValue: (mobile ?? "").toString(),
                     decoration:
                         const InputDecoration(labelText: "Mobile Number"),
-                    onTap: () => {},
                     onChanged: (value) {
                       setState(() {
-                        mobile = value;
+                        mobile = value as int;
                       });
                     },
                   ),
