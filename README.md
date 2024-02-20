@@ -13,7 +13,7 @@ This is a TodoList application built using Flutter for the frontend and Supabase
 - Supabase Flutter: A Flutter library for integrating Supabase authentication and database functionality.
 # Installation Instructions
 1. Clone the Repository:
-   git clone https://github.com/your-username/todo-app.git
+   git clone https://github.com/tomaravi7/supabase-flutter-todo-list-user-management
 2. Install Dependencies:
    Run flutter pub get
 3. Set Up Supabase:
